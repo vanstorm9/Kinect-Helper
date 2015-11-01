@@ -1,0 +1,53 @@
+#!/bin/bash
+
+case $1 in
+	1) echo "Shut Down"
+	   # Shut down
+	   sudo shutdown -h now
+	   exit;;
+	3) echo "Disable Keyboard"
+	   # Disable Keyboard
+		if [ -f ./xmodmap.new ]	#remove xmodmap.new if it exists
+		then
+  		 rm xmodmap.new
+		fi
+		if [ -f ./xmodmap.old ]        #remove xmodmap.old if it exists
+		then
+  		 rm xmodmap.old
+		fi
+
+		xmodmap -pke > xmodmap.old	#backup current keyboard config
+
+		touch xmodmap.new		#write a blank keyboard config
+
+		for i in `seq 8 255`; do	
+ 		  echo "keycode  $i = " >> xmodmap.new
+		done
+
+		xmodmap xmodmap.new;;	#set keyboard to blank
+	4) echo "Restore Keyboard" 
+	   # Restore keyboard
+	   xmodmap xmodmap.old;;
+	5) echo "Load Firefox" 
+	   # Load Firefox
+	   firefox;;
+	6) echo "Exit Window" 
+	   # Close the active window
+	   xkill -id `xprop -root _NET_ACTIVE_WINDOW | cut -d\# -f2`;;
+
+	7) echo "Wake Up"
+	   # Wake Up 
+	   xdotool key '';;
+
+	2) echo "Shut Off Monitor"
+	   # Shut Off Monitor 
+	   xset dpms force off;;
+
+	# just in case we need extra numbers
+	 # 9) echo "Maximize Window" 
+	     # Maximize Window
+	# 10) echo "ten" ;;
+
+	*) echo "INVALID GESTURE!" ;;
+esac
+
